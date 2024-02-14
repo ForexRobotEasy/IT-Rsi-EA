@@ -1,0 +1,80 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                              IT Rsi EA          |
+//|                             Developed by Forex Robot Easy Team   |
+//|                                        forexroboteasy.com        |
+//+------------------------------------------------------------------+
+
+// Input parameters
+input int rsiPeriod = 14; // RSI period
+input int overboughtLevel = 70; // Overbought level
+input int oversoldLevel = 30; // Oversold level
+input double lotSize = 0.01; // Lot size
+input int stopLoss = 100; // Stop loss in pips
+input int takeProfit = 200; // Take profit in pips
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Add initialization code here
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Add deinitialization code here
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Get the RSI value
+    double rsiValue = iRSI(Symbol(), PERIOD_CURRENT, rsiPeriod, PRICE_CLOSE, 0);
+
+    // Check for overbought condition
+    if (rsiValue > overboughtLevel)
+    {
+        // Open a sell trade
+        SellTrade();
+    }
+    
+    // Check for oversold condition
+    if (rsiValue < oversoldLevel)
+    {
+        // Open a buy trade
+        BuyTrade();
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Function to open a sell trade                                    |
+//+------------------------------------------------------------------+
+void SellTrade()
+{
+    // Calculate stop loss and take profit levels
+    double stopLossLevel = Ask + stopLoss * Point;
+    double takeProfitLevel = Ask - takeProfit * Point;
+
+    // Open a sell trade with the specified lot size, stop loss and take profit
+    OrderSend(Symbol(), OP_SELL, lotSize, Bid, 0, stopLossLevel, takeProfitLevel, 'Sell Trade', 0, 0, clrRed);
+}
+
+//+------------------------------------------------------------------+
+//| Function to open a buy trade                                     |
+//+------------------------------------------------------------------+
+void BuyTrade()
+{
+    // Calculate stop loss and take profit levels
+    double stopLossLevel = Bid - stopLoss * Point;
+    double takeProfitLevel = Bid + takeProfit * Point;
+
+    // Open a buy trade with the specified lot size, stop loss and take profit
+    OrderSend(Symbol(), OP_BUY, lotSize, Ask, 0, stopLossLevel, takeProfitLevel, 'Buy Trade', 0, 0, clrGreen);
+}
